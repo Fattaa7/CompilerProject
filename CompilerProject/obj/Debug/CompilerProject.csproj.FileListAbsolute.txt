@@ -1,0 +1,15 @@
+C:\Users\ahmed\source\repos\CompilerProject\bin\Debug\CompilerProject.exe.config
+C:\Users\ahmed\source\repos\CompilerProject\bin\Debug\CompilerProject.exe
+C:\Users\ahmed\source\repos\CompilerProject\bin\Debug\CompilerProject.pdb
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.Form1.resources
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.Properties.Resources.resources
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.csproj.GenerateResource.cache
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.exe
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.pdb
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.msgbox.resources
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.Home.resources
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.HomeLay.resources
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.textsize.resources
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.Scanner1.resources
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.csprojAssemblyReference.cache
+C:\Users\ahmed\source\repos\CompilerProject\obj\Debug\CompilerProject.csproj.CoreCompileInputs.cache
