@@ -21,7 +21,6 @@ namespace CompilerProject
         public int temp = 0;
         public ListBox ll = new ListBox();
 
-
         public int ind = 0;
         public Parser() { } //constructor
         public void parsing(List<Token> tokenslist)
@@ -33,19 +32,22 @@ namespace CompilerProject
             {
                 myStart = "";
                 ind = i;
-                if (tokenslist[i].type == Type.T_READ) { flag = true; read(); }
-                else if (tokenslist[i].type == Type.T_REPEATSTATEMENT) { repeat(); flag = true; }
-                else if (tokenslist[i].type == Type.T_IF) { ifSatament(); flag = true; }
-                else if (tokenslist[i].type == Type.T_MAIN) { mainFunction(); flag = true; }
-                else if (tokenslist[i].type == Type.T_LEFTCURLYBRACKETS) { functionBody(); flag = true; }
-                else if (tokenslist[i].type == Type.T_WRITE) { flag = true; write(); }
-                else if (tokenslist[i].type == Type.T_RETURN) { flag = true; ritorno(); }
-                else if (tokenslist[i].type == Type.T_IDENTIFIER) { bool s = assignment(); if (!s) { children.Clear(); ind = temp; functionCall(); } else { treeprinter(root, children, "Assignment Statement"); ind--; flag = true; } }
-                else if (tokenslist[i].type == Type.T_NUMBER || tokenslist[i].type == Type.T_LEFTPARENTHESES) { flag = true; expression(); }
-                else if (((tokenslist[i].type == Type.T_DATATYPEFLOAT) || (tokenslist[i].type == Type.T_DATATYPEINT) || (tokenslist[i].type == Type.T_DATATYPESTRING)) && tokenslist[i + 1].type == Type.T_IDENTIFIER && tokenslist[i + 2].type == Type.T_LEFTPARENTHESES) { flag = true; functionDec(); ind--; }
-                else if (((tokenslist[i].type == Type.T_DATATYPEFLOAT) || (tokenslist[i].type == Type.T_DATATYPEINT) || (tokenslist[i].type == Type.T_DATATYPESTRING))) { flag = true; decStatment(); }
-                if (flag) i = ind;
-                children.Clear();
+                try
+                {
+                    if (tokenslist[i].type == Type.READ) { flag = true; read(); }
+                    else if (tokenslist[i].type == Type.REPEATSTATEMENT) { repeat(); flag = true; }
+                    else if (tokenslist[i].type == Type.IF) { ifSatament(); flag = true; }
+                    else if (tokenslist[i].type == Type.MAIN) { mainFunction(); flag = true; }
+                    else if (tokenslist[i].type == Type.LEFTCURLYBRACKETS) { functionBody(); flag = true; }
+                    else if (tokenslist[i].type == Type.WRITE) { flag = true; write(); }
+                    else if (tokenslist[i].type == Type.RETURN) { flag = true; ritorno(); }
+                    else if (tokenslist[i].type == Type.IDENTIFIER) { bool s = assignment(); if (!s) { children.Clear(); ind = temp; functionCall(); } else { treeprinter(root, children, "Assignment Statement"); ind--; flag = true; } }
+                    else if (tokenslist[i].type == Type.NUMBER || tokenslist[i].type == Type.LEFTPARENTHESES) { flag = true; expression(); }
+                    else if (((tokenslist[i].type == Type.DATATYPEFLOAT) || (tokenslist[i].type == Type.DATATYPEINT) || (tokenslist[i].type == Type.DATATYPESTRING))) { flag = true; decStatment(); }
+                    if (flag) i = ind;
+                    children.Clear();
+                }
+                catch { root = new TreeNode("Error - Expected semi_colon"); }
             }
 
         }
@@ -54,12 +56,12 @@ namespace CompilerProject
         {
             temp = ind;
             if (myStart == "") myStart = "assignment";
-            bool c1 = match(Type.T_IDENTIFIER);
-            bool c2 = match(Type.T_ASSIGNMENTOPERATOR);
+            bool c1 = match(Type.IDENTIFIER);
+            bool c2 = match(Type.ASSIGNMENTOPERATOR);
             if (!c2 || !c1) { return false; }
             bool c3 = expression();
 
-            bool c4 = match(Type.T_SEMICOLON);
+            bool c4 = match(Type.SEMICOLON);
             return c1 && c2 && c3 && c4;
         }
         public bool match(Type x)
@@ -72,19 +74,20 @@ namespace CompilerProject
         {
 
             if (myStart == "") myStart = "read";
-            bool c1 = match(Type.T_READ);
-            bool c2 = match(Type.T_IDENTIFIER);
-            bool c3 = match(Type.T_SEMICOLON);
+            bool c1 = match(Type.READ);
+            bool c2 = match(Type.IDENTIFIER);
+            bool c3 = match(Type.SEMICOLON);
             if (c1 && c2 && c3) { treeprinter(statements, children, "Read Statement"); ind--; return true; }
-            return false;
+            if (c1 && c2 && !c3) { root = new TreeNode(" ERROR - expected semi_colon"); return false; }
+                return false;
         }
 
         public bool ritorno()
         {
             if (myStart == "") myStart = "return";
-            bool c1 = match(Type.T_RETURN);
+            bool c1 = match(Type.RETURN);
             bool c2 = expression();
-            bool c3 = match(Type.T_SEMICOLON);
+            bool c3 = match(Type.SEMICOLON);
             if (c1 && c2 && c3) { if (myStart == "return") { treeprinter(statements, children, "Return Statement"); ind--; return true; } else return true; }
             return false;
         }
@@ -110,7 +113,7 @@ namespace CompilerProject
 
         public bool espressione()
         {
-            bool c1 = match(Type.T_PLUSOPERATOR) || match(Type.T_MINUSOPERATOR);
+            bool c1 = match(Type.PLUSOPERATOR) || match(Type.MINUSOPERATOR);
             bool c2 = term();
             bool c3 = false;
             if (c1 && c2)
@@ -121,44 +124,45 @@ namespace CompilerProject
         public bool write()
         {
             if (myStart == "") myStart = "write";
-            bool c1 = match(Type.T_WRITE);
+            bool c1 = match(Type.WRITE);
             bool c2 = expression();
-            bool c3 = match(Type.T_ENDLINE);
-            bool c4 = match(Type.T_SEMICOLON);
+            bool c3 = match(Type.ENDLINE);
+            bool c4 = match(Type.SEMICOLON);
             if ((c1 && c2 && c4) || (c1 && c3 && c4)) { if (myStart != "write") return true; else { treeprinter(statements, children, "Write Statement"); ind--; return true; } }
-            return ((c1 && c2 && c3) || (c3));
+            if ((c1 && c2 && !c4) || (c1 && c3 && !c4)) { root = new TreeNode("ERROR - expected semi_colon");  }
+                return ((c1 && c2 && c3) || (c3));
         }
 
         public bool factor()
         {
-            bool c1 = match(Type.T_LEFTPARENTHESES), c2 = false, c3 = false;
-            if (parentheses.Count >= 1 && match(Type.T_RIGHTPARENTHESES)) { parentheses.Pop(); c3 = true; }
+            bool c1 = match(Type.LEFTPARENTHESES), c2 = false, c3 = false;
+            if (parentheses.Count >= 1 && match(Type.RIGHTPARENTHESES)) { parentheses.Pop(); c3 = true; }
             else if (c1)
             {
                 parentheses.Push('(');
                 c2 = expression();
-                c3 = match(Type.T_RIGHTPARENTHESES);
+                c3 = match(Type.RIGHTPARENTHESES);
             }
-            bool c4 = match(Type.T_NUMBER);
-            bool c5 = match(Type.T_STRING);
-            bool c6 = match(Type.T_IDENTIFIER);
+            bool c4 = match(Type.NUMBER);
+            bool c5 = match(Type.STRING);
+            bool c6 = match(Type.IDENTIFIER);
             bool c7 = functionCall();
             return (c1 && c2 && c3) || c4 || c5 || c6 || c7;
         }
 
         public bool functionDec()
         {
-            bool c1 = match(Type.T_DATATYPEFLOAT) || match(Type.T_DATATYPEINT) || match(Type.T_DATATYPESTRING);
-            bool c2 = match(Type.T_IDENTIFIER);
-            bool c3 = match(Type.T_LEFTPARENTHESES);
+            bool c1 = match(Type.DATATYPEFLOAT) || match(Type.DATATYPEINT) || match(Type.DATATYPESTRING);
+            bool c2 = match(Type.IDENTIFIER);
+            bool c3 = match(Type.LEFTPARENTHESES);
             bool c4 = parameter();
             bool c6 = false;
-            if (c4 == false) c6 = match(Type.T_RIGHTPARENTHESES);
+            if (c4 == false) c6 = match(Type.RIGHTPARENTHESES);
             while (c4)
             {
-                bool c5 = match(Type.T_COMMA);
+                bool c5 = match(Type.COMMA);
                 if (c5) c4 = parameter();
-                else { c6 = match(Type.T_RIGHTPARENTHESES); c4 = false; }
+                else { c6 = match(Type.RIGHTPARENTHESES); c4 = false; }
             }
             //if(!c4 && c5) error
             if (c1 && c2 && c3 && c6) { treeprinter(functions, children, "Function Declaration"); return true; }
@@ -168,9 +172,9 @@ namespace CompilerProject
 
         public bool parameter()
         {
-            bool c1 = match(Type.T_DATATYPEFLOAT) || match(Type.T_DATATYPEINT) || match(Type.T_DATATYPESTRING);
+            bool c1 = match(Type.DATATYPEFLOAT) || match(Type.DATATYPEINT) || match(Type.DATATYPESTRING);
             if (!c1) return false;
-            bool c2 = match(Type.T_IDENTIFIER);
+            bool c2 = match(Type.IDENTIFIER);
             return c1 && c2;
         }
         public bool term()
@@ -182,7 +186,7 @@ namespace CompilerProject
         }
         public bool termine()
         {
-            bool c1 = match(Type.T_MULTIPLICATIONOPERATOR) || match(Type.T_DIVISIONOPERATOR) || match(Type.T_PLUSOPERATOR) || match(Type.T_MINUSOPERATOR);
+            bool c1 = match(Type.MULTIPLICATIONOPERATOR) || match(Type.DIVISIONOPERATOR) || match(Type.PLUSOPERATOR) || match(Type.MINUSOPERATOR);
             if (!c1) return false;
             bool c2 = factor();
             if (!c2) return false;
@@ -193,7 +197,7 @@ namespace CompilerProject
 
         public bool functionCall()
         {
-            bool c1 = match(Type.T_IDENTIFIER);
+            bool c1 = match(Type.IDENTIFIER);
             bool c2 = functionPart();
             if (c1 && c2) { treeprinter(functions, children, "Function Call"); return true; }
             else return false;
@@ -203,16 +207,16 @@ namespace CompilerProject
 
         public bool functionPart()
         {
-            bool c1 = match(Type.T_LEFTPARENTHESES);
-            bool c2 = match(Type.T_IDENTIFIER);
+            bool c1 = match(Type.LEFTPARENTHESES);
+            bool c2 = match(Type.IDENTIFIER);
             bool c4 = false;
             if (c2) while (c2)
                 {
-                    bool c3 = match(Type.T_COMMA);
-                    if (c3) c2 = match(Type.T_IDENTIFIER);
-                    else { c4 = match(Type.T_RIGHTPARENTHESES); c2 = false; }
+                    bool c3 = match(Type.COMMA);
+                    if (c3) c2 = match(Type.IDENTIFIER);
+                    else { c4 = match(Type.RIGHTPARENTHESES); c2 = false; }
                 }
-            else c4 = match(Type.T_RIGHTPARENTHESES);
+            else c4 = match(Type.RIGHTPARENTHESES);
 
             return (c1 && c4);
 
@@ -221,7 +225,7 @@ namespace CompilerProject
         public bool decStatment()
         {
             if (myStart == "") myStart = "declarationstatement";
-            bool c1 = match(Type.T_DATATYPEFLOAT) || match(Type.T_DATATYPEINT) || match(Type.T_DATATYPESTRING);
+            bool c1 = match(Type.DATATYPEFLOAT) || match(Type.DATATYPEINT) || match(Type.DATATYPESTRING);
             bool c2 = true;
             bool c3 = true;
             bool c4 = true;
@@ -229,14 +233,15 @@ namespace CompilerProject
             if (c2) while (c4)
                 {
                     c2 = assignment();
-                    c3 = match(Type.T_COMMA);
+                    c3 = match(Type.COMMA);
                     if (c3) c4 = true;
                     else c4 = false;
                 }
-            bool c5 = match(Type.T_SEMICOLON);
-            if (list[ind - 1].type == Type.T_SEMICOLON) c5 = true;
+            bool c5 = match(Type.SEMICOLON);
+            if (list[ind - 1].type == Type.SEMICOLON) c5 = true;
             if (c1 && !c3 && c5) { treeprinter(statements, children, "Declaration_Statement"); ind--; return true; }
-            return c1 && !c3 && c5;
+            if (c1 && !c3 && !c5) { root = new TreeNode("ERROR - expected semi_colon"); }
+                return c1 && !c3 && c5;
 
         }
 
@@ -244,9 +249,9 @@ namespace CompilerProject
         {
             int temp = ind;
             if (myStart == "") myStart = "if";
-            bool c1 = match(Type.T_IF);
+            bool c1 = match(Type.IF);
             bool c2 = conditionStatement();
-            bool c3 = match(Type.T_THEN);
+            bool c3 = match(Type.THEN);
             bool c4 = true;
             int checker = 0;
             while (c4)
@@ -260,7 +265,7 @@ namespace CompilerProject
 
             bool c5 = elseIf();
             bool c6 = elseStatement();
-            bool c7 = match(Type.T_END);
+            bool c7 = match(Type.END);
             if ((c1 && c2 && c3 && checker > 0) && (c5 || c6 || c7)) { treeprinter(statements, children, "If Statement"); ind--; return true; }
             return false;
         }
@@ -268,7 +273,7 @@ namespace CompilerProject
         public bool functionBody()
         {
             if (myStart == "") myStart = "functionBody";
-            bool c1 = match(Type.T_LEFTCURLYBRACKETS);
+            bool c1 = match(Type.LEFTCURLYBRACKETS);
             int check = 0;
             bool c2 = true;
             int x = 0;
@@ -283,7 +288,7 @@ namespace CompilerProject
                 if (!c2) { ind = tmp; tmp = ind; c2 = ritorno(); if (c2) x++; }
                 if (c2) check++;
             }
-            bool c4 = match(Type.T_RIGHTCURLYBRACKETS);
+            bool c4 = match(Type.RIGHTCURLYBRACKETS);
             if (c1 && check > 0 && c4 && x < 2) { if (myStart == "functionBody") { treeprinter(functions, children, "Function Body"); ind--; return true; } else return true; }
             if (x >= 2) { ll.Items.Add("two return statements in same functionBody"); }
             return c1 && check > 0 && c4 && x < 2;
@@ -300,9 +305,9 @@ namespace CompilerProject
         public bool mainFunction()
         {
             if (myStart == "") myStart = "mainFunction";
-            bool c1 = match(Type.T_MAIN);
-            bool c2 = match(Type.T_LEFTPARENTHESES);
-            bool c3 = match(Type.T_RIGHTPARENTHESES);
+            bool c1 = match(Type.MAIN);
+            bool c2 = match(Type.LEFTPARENTHESES);
+            bool c3 = match(Type.RIGHTPARENTHESES);
             bool c4 = functionBody();
             if (c1 && c2 && c3 && c4) { treeprinter(root, children, "Main Function"); ind--; return true; }
             return c1 && c2 && c3 && c4;
@@ -310,20 +315,20 @@ namespace CompilerProject
 
         public bool elseIf()
         {
-            bool c1 = match(Type.T_ELSEIF);
+            bool c1 = match(Type.ELSEIF);
             if (!c1) return false;
             bool c2 = conditionStatement();
-            bool c3 = match(Type.T_THEN);
+            bool c3 = match(Type.THEN);
             bool c4 = write() || read() || ritorno() || assignment();
             bool c5 = true;// elseIf();
             bool c6 = elseStatement();
-            bool c7 = match(Type.T_END);
+            bool c7 = match(Type.END);
             return ((c1 && c2 && c3 && c4) && (c5 || c6 || c7));
         }
 
         public bool elseStatement()
         {
-            bool c1 = match(Type.T_ELSE);
+            bool c1 = match(Type.ELSE);
             if (!c1) return false;
             bool c2 = true;
             int check = 0;
@@ -344,7 +349,7 @@ namespace CompilerProject
         public bool repeat()
         {
             if (myStart == "") myStart = "repeat";
-            bool c1 = match(Type.T_REPEATSTATEMENT);
+            bool c1 = match(Type.REPEATSTATEMENT);
             int check = 1;
             bool c2 = true;
             while (c2)
@@ -357,7 +362,7 @@ namespace CompilerProject
                 if (!c2) { ind = tmp; tmp = ind; c2 = decStatment(); }
                 if (c2) check++;
             }
-            bool c3 = match(Type.T_UNTIL);
+            bool c3 = match(Type.UNTIL);
             bool c4 = conditionStatement();
             if (c1 && check > 0 && c3 && c4) { treeprinter(statements, children, "Repeat Statement"); ind--; return true; }
             return c1 && check > 0 && c3 && c4;
@@ -367,7 +372,7 @@ namespace CompilerProject
         {
             bool c3 = false;
             bool c1 = condition();
-            bool c2 = match(Type.T_OR);
+            bool c2 = match(Type.OR);
             if (c2) c3 = conditionTerm();
             else c3 = false;
 
@@ -376,7 +381,7 @@ namespace CompilerProject
         public bool condition()
         {
             bool c1 = expression();
-            bool c2 = match(Type.T_GREATERTHAN) || match(Type.T_LESSTHAN) || match(Type.T_EQUALTO) || match(Type.T_NOTEQUAL);
+            bool c2 = match(Type.GREATERTHAN) || match(Type.LESSTHAN) || match(Type.EQUALTO) || match(Type.NOTEQUAL);
             bool c3 = expression();
             return c1 && c2 && c3;
         }
@@ -391,7 +396,7 @@ namespace CompilerProject
 
         public bool conditionTermine()
         {
-            bool c1 = match(Type.T_AND);
+            bool c1 = match(Type.AND);
             bool c2 = condition();
             return c1 && c2;
         }

@@ -14,18 +14,18 @@ namespace CompilerProject
         public Token last;
         public Dictionary<string, Type> data = new Dictionary<string, Type>
         {
-            {"int",Type.T_DATATYPEINT},{"float",Type.T_DATATYPEFLOAT},{"string",Type.T_DATATYPESTRING},{"if",Type.T_IF},{"else",Type.T_ELSE},
-            {"elseif",Type.T_ELSEIF},{"until",Type.T_UNTIL},{"read",Type.T_READ},{"return",Type.T_RETURN},{"endl",Type.T_ENDLINE},
-            {"end",Type.T_END},{"constant",Type.T_CONSTANT},{"program",Type.T_PROGRAM},{"repeat",Type.T_REPEATSTATEMENT},{":=",Type.T_ASSIGNMENTOPERATOR},
-            {"<>",Type.T_NOTEQUAL},{"&&",Type.T_AND},{"||",Type.T_OR},{"main",Type.T_MAIN},{"write",Type.T_WRITE},{"then",Type.T_THEN}
+            {"int",Type.DATATYPEINT},{"float",Type.DATATYPEFLOAT},{"string",Type.DATATYPESTRING},{"if",Type.IF},{"else",Type.ELSE},
+            {"elseif",Type.ELSEIF},{"until",Type.UNTIL},{"read",Type.READ},{"return",Type.RETURN},{"endl",Type.ENDLINE},
+            {"end",Type.END},{"constant",Type.CONSTANT},{"program",Type.PROGRAM},{"repeat",Type.REPEATSTATEMENT},{":=",Type.ASSIGNMENTOPERATOR},
+            {"<>",Type.NOTEQUAL},{"&&",Type.AND},{"||",Type.OR},{"main",Type.MAIN},{"write",Type.WRITE},{"then",Type.THEN}
         };
-        public Dictionary<Char, Type> operators = new Dictionary<char, Type>{{';',Type.T_SEMICOLON},{'+',Type.T_PLUSOPERATOR},{'-',Type.T_MINUSOPERATOR},{'*',Type.T_MULTIPLICATIONOPERATOR},{'<',Type.T_LESSTHAN},{'/',Type.T_DIVISIONOPERATOR},
-            {'>',Type.T_GREATERTHAN},{'=',Type.T_EQUALTO},{'{',Type.T_LEFTCURLYBRACKETS},{'(',Type.T_LEFTPARENTHESES},{')',Type.T_RIGHTPARENTHESES},{'}',Type.T_RIGHTCURLYBRACKETS},{',',Type.T_COMMA},
+        public Dictionary<Char, Type> operators = new Dictionary<char, Type>{{';',Type.SEMICOLON},{'+',Type.PLUSOPERATOR},{'-',Type.MINUSOPERATOR},{'*',Type.MULTIPLICATIONOPERATOR},{'<',Type.LESSTHAN},{'/',Type.DIVISIONOPERATOR},
+            {'>',Type.GREATERTHAN},{'=',Type.EQUALTO},{'{',Type.LEFTCURLYBRACKETS},{'(',Type.LEFTPARENTHESES},{')',Type.RIGHTPARENTHESES},{'}',Type.RIGHTCURLYBRACKETS},{',',Type.COMMA},
             };
         public Type typeassign(string s)  // return type for lexeme
         {
             if (data.ContainsKey(s)) return data[s];
-            return Type.T_IDENTIFIER;
+            return Type.IDENTIFIER;
         }
         public ScannerCompiler(string tiny)
         { // read tiny code
@@ -69,35 +69,35 @@ namespace CompilerProject
                         if (lexeme.Count(x => x == '.') > 1)
                         {
                             tokens.Clear();
-                            addtotokens(lexeme, Type.T_ERROR);
+                            addtotokens(lexeme, Type.ERROR);
                             break;
                         }
                         else
                         {
 
 
-                            if (last.type == Type.T_IF || last.type == Type.T_RIGHTCURLYBRACKETS
-                             || last.type == Type.T_AND || last.type == Type.T_ASSIGNMENTOPERATOR || last.type == Type.T_COMMA
-                             || last.type == Type.T_DIVISIONOPERATOR || last.type == Type.T_ELSE || last.type == Type.T_ELSEIF
-                             || last.type == Type.T_EQUALTO || last.type == Type.T_GREATERTHAN || last.type == Type.T_LEFTCURLYBRACKETS
-                             || last.type == Type.T_LESSTHAN || last.type == Type.T_MINUSOPERATOR || last.type == Type.T_MULTIPLICATIONOPERATOR
-                             || last.type == Type.T_NOTEQUAL || last.type == Type.T_OR || last.type == Type.T_PLUSOPERATOR || last.type == Type.T_IDENTIFIER
-                             || last.type == Type.T_RETURN)
+                            if (last.type == Type.IF || last.type == Type.RIGHTCURLYBRACKETS
+                             || last.type == Type.AND || last.type == Type.ASSIGNMENTOPERATOR || last.type == Type.COMMA
+                             || last.type == Type.DIVISIONOPERATOR || last.type == Type.ELSE || last.type == Type.ELSEIF
+                             || last.type == Type.EQUALTO || last.type == Type.GREATERTHAN || last.type == Type.LEFTCURLYBRACKETS
+                             || last.type == Type.LESSTHAN || last.type == Type.MINUSOPERATOR || last.type == Type.MULTIPLICATIONOPERATOR
+                             || last.type == Type.NOTEQUAL || last.type == Type.OR || last.type == Type.PLUSOPERATOR || last.type == Type.IDENTIFIER
+                             || last.type == Type.RETURN)
                             {
                                 {
-                                    addtotokens(lexeme, Type.T_NUMBER);
+                                    addtotokens(lexeme, Type.NUMBER);
                                     i = j - 1;
                                 }
-                            } 
+                            }
                             else
                             {
                                 tokens.Clear();
-                                addtotokens("identifier can't begin with a number", Type.T_ERROR);
-                                
+                                addtotokens("identifier can't begin with a number", Type.ERROR);
+
                                 break;
                             }
 
-                            }
+                        }
                     }
                 }
                 else if (tinyCode[i] == '"')
@@ -108,16 +108,16 @@ namespace CompilerProject
                         lexeme += tinyCode[j];
                         j++;
                     } while (j < tinyCode.Length && tinyCode[j] != '"');
-                    if (j == tinyCode.Length && tinyCode[j - 1] != '"') 
-                    { 
+                    if (j == tinyCode.Length && tinyCode[j - 1] != '"')
+                    {
                         tokens.Clear();
-                        addtotokens(lexeme, Type.T_ERROR);
+                        addtotokens(lexeme, Type.ERROR);
                         break;
                     }
                     else
                     {
                         lexeme += tinyCode[j];
-                        addtotokens(lexeme, Type.T_STRING);
+                        addtotokens(lexeme, Type.STRING);
                     }
                     i = j;
                 }
@@ -136,25 +136,25 @@ namespace CompilerProject
                     if (j + 1 == tinyCode.Length)
                     {
                         lexeme += tinyCode[j];
-                        addtotokens(lexeme, Type.T_ERROR);
+                        addtotokens(lexeme, Type.ERROR);
                         tokens.Clear();
-                        addtotokens(lexeme, Type.T_ERROR);
+                        addtotokens(lexeme, Type.ERROR);
                         break;
                     }
                     else
                     {
                         lexeme += tinyCode[j];
                         lexeme += tinyCode[j + 1];
-                        addtotokens(lexeme, Type.T_COMMENT); i = j + 1;
+                        addtotokens(lexeme, Type.COMMENT); i = j + 1;
                     }
                 }
                 else if (tinyCode[i] == '(')
                 {
                     lexeme += tinyCode[i];
-                    tokens.Add(new Token(lexeme, Type.T_LEFTPARENTHESES));
+                    tokens.Add(new Token(lexeme, Type.LEFTPARENTHESES));
                     lexeme = "";
 
-                    if (last != null && last.type == Type.T_IDENTIFIER)
+                    if (last != null && last.type == Type.IDENTIFIER)
                     {
                         i++;
                         int j = i;
@@ -163,8 +163,8 @@ namespace CompilerProject
                             lexeme += tinyCode[j];
                             j++;
                         }
-                        if (typeassign(lexeme) == Type.T_IDENTIFIER) tokens[tokens.Count - 2].type = Type.T_IDENTIFIER;
-                        else tokens[tokens.Count - 2].type = Type.T_IDENTIFIER;
+                        if (typeassign(lexeme) == Type.IDENTIFIER) tokens[tokens.Count - 2].type = Type.IDENTIFIER;
+                        else tokens[tokens.Count - 2].type = Type.IDENTIFIER;
                         lexeme = "";
                         i--;
                     }
@@ -173,13 +173,13 @@ namespace CompilerProject
                     }
 
                 }
-                else if (tinyCode[i] == '|' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '|')) { lexeme += "||"; addtotokens(lexeme, Type.T_OR); i++; }
-                else if (tinyCode[i] == '&' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '&')) { lexeme += "&&"; addtotokens(lexeme, Type.T_AND); i++; }
-                else if (tinyCode[i] == ':' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '=')) { lexeme += ":="; addtotokens(lexeme, Type.T_ASSIGNMENTOPERATOR); i++; }
+                else if (tinyCode[i] == '|' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '|')) { lexeme += "||"; addtotokens(lexeme, Type.OR); i++; }
+                else if (tinyCode[i] == '&' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '&')) { lexeme += "&&"; addtotokens(lexeme, Type.AND); i++; }
+                else if (tinyCode[i] == ':' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '=')) { lexeme += ":="; addtotokens(lexeme, Type.ASSIGNMENTOPERATOR); i++; }
 
                 else if (operators.ContainsKey(tinyCode[i]))
                 {
-                    if (tinyCode[i] == '<' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '>')) { lexeme += "<>"; addtotokens(lexeme, Type.T_NOTEQUAL); i++; }
+                    if (tinyCode[i] == '<' && i + 1 < tinyCode.Length && (tinyCode[i + 1] == '>')) { lexeme += "<>"; addtotokens(lexeme, Type.NOTEQUAL); i++; }
                     else
                     {
                         lexeme += tinyCode[i];
@@ -188,19 +188,19 @@ namespace CompilerProject
                 }
                 else if (tinyCode[i] == ' ' || tinyCode[i] == '\n')
                 {
-                    if (tinyCode[i] == '\n') tokens.Add(new Token("\n", Type.T_NEWLINE));
+                    if (tinyCode[i] == '\n') tokens.Add(new Token("\n", Type.NEWLINE));
                 }
                 else
                 {
                     lexeme += tinyCode[i];
                     tokens.Clear();
-                    addtotokens(lexeme, Type.T_ERROR);
+                    addtotokens(lexeme, Type.ERROR);
                     break;
                 }
 
             }
         }
-        
+
 
     }
 }

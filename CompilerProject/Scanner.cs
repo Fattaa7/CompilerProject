@@ -36,6 +36,7 @@ namespace CompilerProject
 		{
 			InitializeComponent();
 			button1.BringToFront();
+			listBox1.Visible = false;
 
 		}
 
@@ -48,12 +49,11 @@ namespace CompilerProject
 		private void button1_Click(object sender, EventArgs e)
 		{
 
-			
 
 			ScannerCompiler sc = new ScannerCompiler(richTextBox1.Text);
-			sc.scan();
 			richTextBox1.Clear();
-
+			sc.scan();
+			int ind = 0;
 			for (int i = 0; i < sc.tokens.Count; i++)
 
 			{
@@ -67,19 +67,18 @@ namespace CompilerProject
 
 
 			}
-
 			List<int> removalList = new List<int>();
-
+			for (int i = 0; i < sc.tokens.Count; i++) if (sc.tokens[i].type == Type.ERROR) listBox1.Items.Add("Error in Line " + (ind + 1).ToString() + ", using " + sc.tokens[i].input); else if (sc.tokens[i].type == Type.NEWLINE || sc.tokens[i].type == Type.COMMENT) { ind++; removalList.Add(i); };
 			for (int i = 0; i < removalList.Count; i++)
 			{
 				sc.tokens.RemoveAt(removalList[i] - i);
 			}
 
+
 			Parser ps = new Parser();
 			ps.parsing(sc.tokens);
-
+		
 			treeView1.Nodes.Add(ps.root);
-
 
 
 
