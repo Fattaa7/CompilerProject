@@ -240,7 +240,7 @@ namespace CompilerProject
             bool c5 = match(Type.SEMICOLON);
             if (list[ind - 1].type == Type.SEMICOLON) c5 = true;
             if (c1 && !c3 && c5) { treeprinter(statements, children, "Declaration_Statement"); ind--; return true; }
-            if (c1 && !c3 && !c5) { root = new TreeNode("ERROR - expected semi_colon"); }
+            if (c1 && !c3 && !c5) { root = new TreeNode("ERROR - Expected semi_colon"); }
                 return c1 && !c3 && c5;
 
         }
@@ -267,6 +267,7 @@ namespace CompilerProject
             bool c6 = elseStatement();
             bool c7 = match(Type.END);
             if ((c1 && c2 && c3 && checker > 0) && (c5 || c6 || c7)) { treeprinter(statements, children, "If Statement"); ind--; return true; }
+            if (c1 && c2 && !c3) { root = new TreeNode("ERROR - Expected THEN");  }
             return false;
         }
 
@@ -365,7 +366,8 @@ namespace CompilerProject
             bool c3 = match(Type.UNTIL);
             bool c4 = conditionStatement();
             if (c1 && check > 0 && c3 && c4) { treeprinter(statements, children, "Repeat Statement"); ind--; return true; }
-            return c1 && check > 0 && c3 && c4;
+            if (c1 && check > 0 && !c3) { root = new TreeNode("ERROR - Expected UNTIL"); }
+                return c1 && check > 0 && c3 && c4;
         }
 
         public bool conditionStatement()
